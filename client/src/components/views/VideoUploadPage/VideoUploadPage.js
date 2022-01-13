@@ -53,6 +53,7 @@ const VideoUploadPage = () => {
                     <Dropzone
                         // onDrop={ }
                         // multiple
+                        //
                         // maxSize
                     >
                         {({ getRootProps, getInputProps }) => (
