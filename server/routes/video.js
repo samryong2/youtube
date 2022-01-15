@@ -21,7 +21,7 @@ let storage = multer.diskStorage({
     }
 })
 
-const upload = multer({ storage: storage }).single("filter");
+const upload = multer({ storage: storage }).single("file");
 //=================================
 //             Video
 //=================================
