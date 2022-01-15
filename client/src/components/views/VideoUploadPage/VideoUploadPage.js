@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Typography, Button, Form, message, Input, Icon } from "antd";
 import Dropzone from 'react-dropzone';
+import Axios from 'axios';
 
 
 const { TextArea } = Input;
@@ -19,7 +20,6 @@ const categoryOption = [
 ]
 
 const VideoUploadPage = () => {
-
     const [VideoTitle, setVideoTitle] = useState('');
     const [Description, setDescription] = useState('');
     const [Private, setPrivate] = useState(0);
@@ -41,6 +41,23 @@ const VideoUploadPage = () => {
         setPrivate(e.currentTarget.value)
     }
 
+    const onDrop = (files) => { 
+        let formData = new FormData();
+        const config = {
+            Header: {'content-type' : 'multipart/form-data'}
+        }
+        formData.append('file', files[0]);
+
+        Axios.post('/api/video/uploadfiles', formData, config)
+            .then(res => { 
+                if (res.data.success) {
+                    
+                } else {
+                    alert('비디오 업로드를 실패했습니다.');
+                }
+            })
+    }
+
     return (
         <div style={{maxWidth:'700px', margin:'2rem auto'}}>
             <div style={{textAlign:"center", marginBottom:'2rem'}}>
@@ -51,10 +68,9 @@ const VideoUploadPage = () => {
                     {/* drop zone */}
 
                     <Dropzone
-                        // onDrop={ }
-                        // multiple
-                        //
-                        // maxSize
+                        onDrop={onDrop}
+                        multiple={false}
+                        maxSize={1000000}
                     >
                         {({ getRootProps, getInputProps }) => (
                             <div style={{
@@ -91,6 +107,8 @@ const VideoUploadPage = () => {
                         <option key={index} value={item.value}>item.label</option>
                     ))}
                 </select>
+                <br />
+                <br />
                 <select onChange={ onCategoryChange}>
                     {categoryOption.map((item, index) => ( 
                         <option key={index} value={item.value}>item.label</option>
