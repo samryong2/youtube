@@ -25,6 +25,10 @@ const VideoUploadPage = () => {
     const [Private, setPrivate] = useState(0);
     const [Category, setCategory] = useState('Film & animation');
 
+    const [FilePath, setFilePath] = useState('');
+    const [Duration, setDuration] = useState('');
+    const [ThumbnailPath, setThumbnailPath] = useState('');
+
     const onTitleChange = (e) => {
         setVideoTitle(e.currentTarget.value)
     }
@@ -51,7 +55,29 @@ const VideoUploadPage = () => {
         Axios.post('/api/video/uploadfiles', formData, config)
             .then(res => { 
                 if (res.data.success) {
-                    
+                    console.log(res.data);
+
+                    const config = {
+                        url: res.data.url,
+                        fileName: res.data.fileName,
+                    }
+
+                    setFilePath(res.data.filepath);
+
+                    Axios.post('/api/video/thumbnail', formData, config)
+                        .then(res => {
+                            console.log(res.data);
+
+                            if (res.data.success) {
+
+                                setDuration(res.data.duration);    
+                                setThumbnailPath(res.data.url);
+                                
+                            } else {
+                                alert('썸네일 생성에 실패 했습니다.');
+                            }
+
+                         })
                 } else {
                     alert('비디오 업로드를 실패했습니다.');
                 }
@@ -84,9 +110,11 @@ const VideoUploadPage = () => {
                     </Dropzone>
                     
                     {/* Thumbnail */}
-                    <div>
-                        <img src='' alt=''/>
-                    </div>
+                    {ThumbnailPath && 
+                        <div>
+                            <img src={'http://localhost:5000/'+ ThumbnailPath } alt=''/>
+                        </div>
+                    }
                 </div>
                 <br />
                 <br />
@@ -104,16 +132,19 @@ const VideoUploadPage = () => {
                 />
                 <select onChange={ onPrivateChange}>
                     {privateOption.map((item, index) => (
-                        <option key={index} value={item.value}>item.label</option>
+                        <option key={index} value={item.value}>{item.label}</option>
                     ))}
                 </select>
                 <br />
                 <br />
                 <select onChange={ onCategoryChange}>
                     {categoryOption.map((item, index) => ( 
-                        <option key={index} value={item.value}>item.label</option>
+                        <option key={index} value={item.value}>{item.label}</option>
                         )) }
                 </select>
+                <br />
+                <br />
+                
                 <Button type='primary' size='large' >
                     submit
                 </Button>
